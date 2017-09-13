@@ -1,15 +1,16 @@
 package net
 
 import (
-	"net"
+
 )
 
 const (
-	g_MSG_SIZE_MAX    	= 65536
-	g_BUF_SIZE_MAX    	= 655360
+	g_MSG_SIZE_MAX    		= 65536
+	g_BUF_SIZE_MAX    		= 655360
 
-	g_WRITE_GO_NUMS		= 8
-	g_CHAN_BUF_LENS		= 256
+	g_WRITE_GO_NUMS			= 8
+	g_WCHAN_BUF_LENS		= 256
+	g_ONECHAN_BUF_LENS		= 256
 )
 
 
@@ -20,8 +21,9 @@ var wChans [g_WRITE_GO_NUMS] chan *SMsgToWrite
 var oneChan chan *SMsgToOne
 
 func init() {
-	mapHandler = make(map[int] Handler,0)
+	mapHandler = make(map[int] *structHandler,0)
 	for i:=0; i < g_WRITE_GO_NUMS ; i++ {
-		chans[i] = make(chan *SBytes,g_CHAN_BUF_LENS)
+		wChans[i] = make(chan *SMsgToWrite,g_WCHAN_BUF_LENS)
 	}
+	oneChan = make(chan *SMsgToOne,g_ONECHAN_BUF_LENS)
 }

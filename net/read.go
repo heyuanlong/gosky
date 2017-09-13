@@ -3,7 +3,6 @@ package net
 import (
 	"net"
 	"time"
-	"math/rand"
 )
 
 
@@ -11,9 +10,7 @@ func handleClient(conn net.Conn)  {
 	//klog.Klog.Println("HandleClient")
 	defer conn.Close()
 
-	sc := &SConn{}
-	sc.conn = conn
-	sc.ch = wChans[rand.Intn(g_WRITE_GO_NUMS)]
+	sc := newSConn(conn)
 
 	var bufBuf = make([]byte,0)
 	var msgBuf = make([]byte, g_MSG_SIZE_MAX)
@@ -34,7 +31,7 @@ func handleClient(conn net.Conn)  {
 			return
 		}
 		bufBuf = append(bufBuf,msgBuf[0:n]...)
-		msgLen,msgType,pBuf  := knet.ParsePackage(bufBuf)
+		msgLen,msgType,pBuf  := ParsePackage(bufBuf)
 		if msgLen == 0 {
 			continue
 		}
@@ -42,10 +39,10 @@ func handleClient(conn net.Conn)  {
 		//klog.Klog.Println("msgType:",msgType)
 		if v,ok := mapHandler[msgType] ; ok{
 			if v.isOneThread {
-				sb := &SMsgToOne{msgType,pBuf}
+				sb := &SMsgToOne{sc,msgType,pBuf}
 				oneChan <- sb
 			}else {
-				v.h.Message(conn,msgType,pBuf)
+				v.h.Message(sc,msgType,pBuf)
 			}
 		}else{
 			//klog.Klog.Println("not reg this msgType:",msgType)

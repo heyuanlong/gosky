@@ -29,7 +29,7 @@ func Start(port int) error {
 	}
 }
 
-func Reg(msgType int, h Handler,isOneThread bool)  {
+func Reg(msgType int, h SHandler,isOneThread bool)  {
 	st := &structHandler{h ,isOneThread}
 	mapHandler[msgType] = st
 }
