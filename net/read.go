@@ -3,15 +3,19 @@ package net
 import (
 	"net"
 	"time"
+	"github.com/heyuanlong/gosky/log"
 )
 
 
 func handleClient(conn net.Conn)  {
-	//klog.Klog.Println("HandleClient")
+	log.Debug("HandleClient")
 	defer conn.Close()
 
 	sc := newSConn(conn)
 
+	sh := &sHandleToOne{sc,1}
+	oneChanHandle <- sh
+	log.Debug("HandleClient2")
 	var bufBuf = make([]byte,0)
 	var msgBuf = make([]byte, g_MSG_SIZE_MAX)
 	for  {
@@ -19,33 +23,35 @@ func handleClient(conn net.Conn)  {
 		n , err := conn.Read(msgBuf)
 		if err!= nil{
 			if nerr, ok := err.(*net.OpError); ok && nerr.Timeout() {
-				//klog.Klog.Println("timeout")
+				log.Debug("timeout")
+				sh := &sHandleToOne{sc,3}
+				oneChanHandle <- sh
 				return
 			}else {
-				//klog.Klog.Println("read close or fail")
+				sh := &sHandleToOne{sc,3}
+				oneChanHandle <- sh
+				log.Debug("read close or fail")
 				return
 			}
 		}
 		if (len(bufBuf) + n ) >  g_BUF_SIZE_MAX {
-			//klog.Klog.Println("buf too big")
+			sh := &sHandleToOne{sc,3}
+			oneChanHandle <- sh
 			return
 		}
 		bufBuf = append(bufBuf,msgBuf[0:n]...)
-		msgLen,msgType,pBuf  := ParsePackage(bufBuf)
+		msgLen,msgType,pBuf  := parsePackage(bufBuf)
 		if msgLen == 0 {
 			continue
 		}
 
-		//klog.Klog.Println("msgType:",msgType)
-		if v,ok := mapHandler[msgType] ; ok{
-			if v.isOneThread {
-				sb := &SMsgToOne{sc,msgType,pBuf}
-				oneChan <- sb
-			}else {
-				v.h.Message(sc,msgType,pBuf)
-			}
+		log.Debug("msgType:",msgType)
+
+		if _,ok := mapHandler[msgType] ; ok{
+			sb := &sMsgToOne{sc,msgType,pBuf}
+			oneChanMsg <- sb
 		}else{
-			//klog.Klog.Println("not reg this msgType:",msgType)
+			g_Handler.Message(sc,msgType,pBuf)
 		}
 		bufBuf = bufBuf[msgLen:]
 	}

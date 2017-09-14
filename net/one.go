@@ -1,15 +1,35 @@
 package net
 
+import (
+	"github.com/heyuanlong/gosky/log"
+)
+
 func oneRun( )  {
 
 	for {
-		v := <- oneChan;
-		//v.sconn
-		//v.msgType
-		//v.data
+		select {
+		case v := <-oneChanMsg:
+			//v.sconn
+			//v.msgType
+			//v.data
 
-		if call,ok := mapHandler[v.msgType] ; ok{
-			call.h.Message(v.sconn,v.msgType,v.data)
+			g_Handler.Message(v.sconn, v.msgType, v.data)
+
+
+		case v := <-oneChanHandle:
+			log.Info("msgType:%d", v.msgType)
+			switch v.msgType {
+			case 1:
+				g_Handler.Connect(v.sconn)
+			case 2:
+				g_Handler.DisConnect(v.sconn)
+			case 3:
+				g_Handler.Error(v.sconn)
+			default:
+			}
+
+		default:
 		}
 	}
+
 }

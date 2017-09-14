@@ -13,17 +13,20 @@ const (
 	g_ONECHAN_BUF_LENS		= 256
 )
 
-
 var g_DeadLineTime	  =	60
 
-var mapHandler map[int] *structHandler
-var wChans [g_WRITE_GO_NUMS] chan *SMsgToWrite
-var oneChan chan *SMsgToOne
+var g_Handler SHandler
+var mapHandler map[int] bool
+
+var wChans [g_WRITE_GO_NUMS] chan *sMsgToWrite
+var oneChanMsg 		chan *sMsgToOne
+var oneChanHandle 	chan *sHandleToOne
 
 func init() {
-	mapHandler = make(map[int] *structHandler,0)
+	mapHandler = make(map[int] bool,0)
 	for i:=0; i < g_WRITE_GO_NUMS ; i++ {
-		wChans[i] = make(chan *SMsgToWrite,g_WCHAN_BUF_LENS)
+		wChans[i] = make(chan *sMsgToWrite,g_WCHAN_BUF_LENS)
 	}
-	oneChan = make(chan *SMsgToOne,g_ONECHAN_BUF_LENS)
+	oneChanMsg = make(chan *sMsgToOne,g_ONECHAN_BUF_LENS)
+	oneChanHandle = make(chan *sHandleToOne,g_ONECHAN_BUF_LENS)
 }

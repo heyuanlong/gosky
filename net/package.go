@@ -4,7 +4,7 @@ import (
 	kutils "github.com/heyuanlong/gosky/utils"
 )
 
-func ParsePackage(buf []byte) (msgLen int,msgType int,pBuf []byte) {
+func parsePackage(buf []byte) (msgLen int,msgType int,pBuf []byte) {
 	zlen := len(buf)
 	if zlen < 6{
 	return 0,0,nil
@@ -18,7 +18,7 @@ func ParsePackage(buf []byte) (msgLen int,msgType int,pBuf []byte) {
 	return
 }
 
-func SetPackage(msgType int , buf []byte) []byte  {
+func setPackage(msgType int , buf []byte) []byte  {
 	pk := make([]byte,0)
 	pkSize :=  4 + len(buf)
 

@@ -16,7 +16,7 @@ func writeRun( i int)  {
 
 
 func (p *SConn) Write(msgType int, data []byte)  {
-	buf := SetPackage(msgType,data)
-	st := &SMsgToWrite{p,buf}
+	buf := setPackage(msgType,data)
+	st := &sMsgToWrite{p,buf}
 	p.ch <- st
 }

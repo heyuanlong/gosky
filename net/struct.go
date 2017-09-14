@@ -8,35 +8,31 @@ import (
 
 type SConn struct {
 	conn 		net.Conn
-	ch 			chan *SMsgToWrite
+	ch 			chan *sMsgToWrite
 
 	writeBuf	[]byte
 }
-type SMsgToWrite struct {
+type sMsgToWrite struct {
 	sconn  *SConn
 	data []byte
 }
-type SMsgToOne struct {
+type sHandleToOne struct {
+	sconn  *SConn
+	msgType int      // 1:connect 2:disconnect 3:error
+}
+
+type sMsgToOne struct {
 	sconn  *SConn
 	msgType int
 	data []byte
 }
 
-
 type SHandler interface {
-	Connect( *SConn,net.Addr )()
+	Connect( *SConn)()
 	DisConnect(*SConn)()
 	Error(*SConn)()
 	Message(*SConn,int,[]byte)()
 }
-
-type structHandler struct {
-	h SHandler
-	isOneThread bool
-}
-
-
-
 
 
 func newSConn(conn net.Conn) *SConn {
