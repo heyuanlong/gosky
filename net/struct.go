@@ -16,10 +16,6 @@ type sMsgToWrite struct {
 	sconn  *SConn
 	data []byte
 }
-type sHandleToOne struct {
-	sconn  *SConn
-	msgType int      // 1:connect 2:disconnect 3:error
-}
 
 type sMsgToOne struct {
 	sconn  *SConn
@@ -28,10 +24,11 @@ type sMsgToOne struct {
 }
 
 type SHandler interface {
-	Connect( *SConn)()
-	DisConnect(*SConn)()
-	Error(*SConn)()
-	Message(*SConn,int,[]byte)()
+	OnConnect( *SConn)()
+	OnDisConnect(*SConn)()
+	OnTimeOut(*SConn)()
+	OnError(*SConn)()
+	OnMessage(*SConn,int,[]byte)()
 }
 
 
@@ -41,4 +38,8 @@ func newSConn(conn net.Conn) *SConn {
 	psc.ch = wChans[rand.Intn(g_WRITE_GO_NUMS)]
 	psc.writeBuf = make([]byte,0)
 	return psc
+}
+
+func (p *SConn) Close() error {
+	return p.conn.Close()
 }

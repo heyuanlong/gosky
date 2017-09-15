@@ -20,7 +20,6 @@ var mapHandler map[int] bool
 
 var wChans [g_WRITE_GO_NUMS] chan *sMsgToWrite
 var oneChanMsg 		chan *sMsgToOne
-var oneChanHandle 	chan *sHandleToOne
 
 func init() {
 	mapHandler = make(map[int] bool,0)
@@ -28,5 +27,4 @@ func init() {
 		wChans[i] = make(chan *sMsgToWrite,g_WCHAN_BUF_LENS)
 	}
 	oneChanMsg = make(chan *sMsgToOne,g_ONECHAN_BUF_LENS)
-	oneChanHandle = make(chan *sHandleToOne,g_ONECHAN_BUF_LENS)
 }

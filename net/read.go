@@ -12,10 +12,8 @@ func handleClient(conn net.Conn)  {
 	defer conn.Close()
 
 	sc := newSConn(conn)
+	g_Handler.OnConnect(sc)
 
-	sh := &sHandleToOne{sc,1}
-	oneChanHandle <- sh
-	log.Debug("HandleClient2")
 	var bufBuf = make([]byte,0)
 	var msgBuf = make([]byte, g_MSG_SIZE_MAX)
 	for  {
@@ -23,20 +21,17 @@ func handleClient(conn net.Conn)  {
 		n , err := conn.Read(msgBuf)
 		if err!= nil{
 			if nerr, ok := err.(*net.OpError); ok && nerr.Timeout() {
-				log.Debug("timeout")
-				sh := &sHandleToOne{sc,3}
-				oneChanHandle <- sh
+				//log.Debug("timeout")
+				g_Handler.OnTimeOut(sc)
 				return
 			}else {
-				sh := &sHandleToOne{sc,3}
-				oneChanHandle <- sh
-				log.Debug("read close or fail")
+				g_Handler.OnError(sc)
+				//log.Debug("read close or fail")
 				return
 			}
 		}
 		if (len(bufBuf) + n ) >  g_BUF_SIZE_MAX {
-			sh := &sHandleToOne{sc,3}
-			oneChanHandle <- sh
+			g_Handler.OnError(sc)
 			return
 		}
 		bufBuf = append(bufBuf,msgBuf[0:n]...)
@@ -45,13 +40,13 @@ func handleClient(conn net.Conn)  {
 			continue
 		}
 
-		log.Debug("msgType:",msgType)
+		//log.Debug("msgType:",msgType)
 
 		if _,ok := mapHandler[msgType] ; ok{
 			sb := &sMsgToOne{sc,msgType,pBuf}
 			oneChanMsg <- sb
 		}else{
-			g_Handler.Message(sc,msgType,pBuf)
+			g_Handler.OnMessage(sc,msgType,pBuf)
 		}
 		bufBuf = bufBuf[msgLen:]
 	}
