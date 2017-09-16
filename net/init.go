@@ -13,18 +13,22 @@ const (
 	g_ONECHAN_BUF_LENS		= 256
 )
 
-var g_DeadLineTime	  =	60
 
-var g_Handler SHandler
-var mapHandler map[int] bool
+type gnet struct{
+	g_DeadLineTime int
+	g_Handler SHandler
+	mapHandler map[int] bool
 
-var wChans [g_WRITE_GO_NUMS] chan *sMsgToWrite
-var oneChanMsg 		chan *sMsgToOne
+	wChans [g_WRITE_GO_NUMS] chan *sMsgToWrite
+	oneChanMsg 		chan *sMsgToOne
+}
 
-func init() {
-	mapHandler = make(map[int] bool,0)
+func NewGnet() {
+	net := new(gnet)
+	net.g_DeadLineTime = 60
+	net.mapHandler = make(map[int] bool,0)
 	for i:=0; i < g_WRITE_GO_NUMS ; i++ {
-		wChans[i] = make(chan *sMsgToWrite,g_WCHAN_BUF_LENS)
+		net.wChans[i] = make(chan *sMsgToWrite,g_WCHAN_BUF_LENS)
 	}
-	oneChanMsg = make(chan *sMsgToOne,g_ONECHAN_BUF_LENS)
+	net.oneChanMsg = make(chan *sMsgToOne,g_ONECHAN_BUF_LENS)
 }

@@ -4,8 +4,8 @@ import (
 	"github.com/heyuanlong/gosky/log"
 )
 
-func writeRun( i int)  {
-	ch :=  wChans[i]
+func (p *gnet) writeRun( i int)  {
+	ch :=  p.wChans[i]
 	for {
 		v := <-ch;
 			dealWrite(v)

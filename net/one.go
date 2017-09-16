@@ -3,16 +3,16 @@ package net
 import (
 )
 
-func oneRun( )  {
+func (p *gnet) oneRun( )  {
 
 	for {
 		select {
-		case v := <-oneChanMsg:
+		case v := <-p.oneChanMsg:
 			//v.sconn
 			//v.msgType
 			//v.data
 
-			g_Handler.OnMessage(v.sconn, v.msgType, v.data)
+			p.g_Handler.OnMessage(v.sconn, v.msgType, v.data)
 		default:
 		}
 	}

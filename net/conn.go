@@ -7,15 +7,15 @@ import (
 	"github.com/heyuanlong/gosky/log"
 )
 
-func SetHander( st SHandler)  {
-	g_Handler = st
+func (p *gnet) SetHander( st SHandler)  {
+	p.g_Handler = st
 }
 
-func Start(port int) error {
+func (p *gnet) Start(port int) error {
 	for i:=0; i < g_WRITE_GO_NUMS ; i++ {
-		go writeRun(i)
+		go p.writeRun(i)
 	}
-	go oneRun()
+	go p.oneRun()
 
 	serverPort :=  strconv.Itoa(port)
 	listen_sock,err := net.Listen("tcp",":"+serverPort)
@@ -30,10 +30,10 @@ func Start(port int) error {
 			log.Error("listen_sock.Accept error:%s",err.Error())
 			continue
 		}
-		go handleClient(new_conn)
+		go p.handleClient(new_conn)
 	}
 }
 
-func RegOne(msgType int)  {
-	mapHandler[msgType] = true
+func (p *gnet) RegOne(msgType int)  {
+	p.mapHandler[msgType] = true
 }

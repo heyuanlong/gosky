@@ -2,7 +2,7 @@ package net
 
 import (
 	"net"
-	"math/rand"
+
 )
 
 
@@ -32,10 +32,10 @@ type SHandler interface {
 }
 
 
-func newSConn(conn net.Conn) *SConn {
+func newSConn(conn net.Conn,ch chan *sMsgToWrite) *SConn {
 	psc := &SConn{}
 	psc.conn = conn
-	psc.ch = wChans[rand.Intn(g_WRITE_GO_NUMS)]
+	psc.ch = ch
 	psc.writeBuf = make([]byte,0)
 	return psc
 }
