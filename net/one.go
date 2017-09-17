@@ -11,7 +11,6 @@ func (p *gnet) oneRun( )  {
 			//v.sconn
 			//v.msgType
 			//v.data
-
 			p.g_Handler.OnMessage(v.sconn, v.msgType, v.data)
 		default:
 		}

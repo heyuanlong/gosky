@@ -28,8 +28,3 @@ func dealWrite(v *sMsgToWrite)  {
 }
 
 
-func (p *SConn) Write(msgType int, data []byte)  {
-	buf := setPackage(msgType,data)
-	st := &sMsgToWrite{p,buf}
-	p.ch <- st
-}

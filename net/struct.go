@@ -39,7 +39,11 @@ func newSConn(conn net.Conn,ch chan *sMsgToWrite) *SConn {
 	psc.writeBuf = make([]byte,0)
 	return psc
 }
-
+func (p *SConn) Write(msgType int, data []byte)  {
+	buf := SetPackage(msgType,data)
+	st := &sMsgToWrite{p,buf}
+	p.ch <- st
+}
 func (p *SConn) Close() error {
 	return p.conn.Close()
 }

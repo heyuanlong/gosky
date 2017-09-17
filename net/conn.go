@@ -7,6 +7,25 @@ import (
 	"github.com/heyuanlong/gosky/log"
 )
 
+type gnet struct{
+	g_DeadLineTime int
+	g_Handler SHandler
+	mapHandler map[int] bool
+
+	wChans [g_WRITE_GO_NUMS] chan *sMsgToWrite
+	oneChanMsg 		chan *sMsgToOne
+}
+
+func NewGnet() *gnet {
+	net := new(gnet)
+	net.g_DeadLineTime = 60
+	net.mapHandler = make(map[int] bool,0)
+	for i:=0; i < g_WRITE_GO_NUMS ; i++ {
+		net.wChans[i] = make(chan *sMsgToWrite,g_WCHAN_BUF_LENS)
+	}
+	net.oneChanMsg = make(chan *sMsgToOne,g_ONECHAN_BUF_LENS)
+	return net
+}
 func (p *gnet) SetHander( st SHandler)  {
 	p.g_Handler = st
 }
