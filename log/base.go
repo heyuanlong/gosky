@@ -15,10 +15,12 @@ type interfaceLog interface {
 var glog interfaceLog
 
 func init() {
-	glog = newDefaultLog()
+	SetLog( newDefaultLog() )
 }
 
-
+func SetLog(lg interfaceLog)  {
+	glog = lg
+}
 func Debug(format string, a ...interface{}) {
 	glog.Write(debugLevel,format,a...)
 }
